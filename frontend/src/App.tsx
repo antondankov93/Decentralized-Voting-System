@@ -1,17 +1,33 @@
-import { WagmiConfig, createClient, configureChains, useAccount } from 'wagmi';
+// src/App.tsx
+import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { Ethereum } from '@wagmi/chains';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { Voting } from './component/Voting';
+
+const { chains, provider } = configureChains(
+    [mainnet],
+    [publicProvider()]
+);
 
 const client = createClient({
     autoConnect: true,
-    connectors: [/* Add your wallet connectors */],
-    provider: publicProvider(),
+    connectors: [
+        new MetaMaskConnector({ chains }),
+        new CoinbaseWalletConnector({
+            chains,
+            options: {
+                appName: 'Voting App',
+            },
+        }),
+    ],
+    provider,
 });
 
 export default function App() {
     return (
         <WagmiConfig client={client}>
-            <YourComponent />
+            <Voting />
         </WagmiConfig>
     );
 }
